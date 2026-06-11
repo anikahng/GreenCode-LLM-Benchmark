@@ -1,0 +1,24 @@
+# LLM Energy Benchmark – Prompt Set
+# Lines starting with # are ignored.
+# Deliberately diverse: short/factual, medium/reasoning, long/generative.
+
+# ── Tier 1: Short factual ────────────────────────────────────────────────────
+What is the capital of France?
+What year was the C programming language created?
+Name three planets in our solar system.
+What is 17 multiplied by 23?
+Who wrote the novel "1984"?
+
+# ── Tier 2: Medium reasoning ─────────────────────────────────────────────────
+Explain the difference between TCP and UDP in two sentences.
+What are the main advantages of using containers over virtual machines?
+Describe how HTTPS protects data in transit.
+What is gradient descent and why is it used in machine learning?
+Summarise the causes of World War I in three bullet points.
+
+# ── Tier 3: Long generation ───────────────────────────────────────────────────
+Write a Python function that checks whether a given string is a palindrome. Include docstring and tests.
+Explain how a transformer neural network works. Cover attention mechanisms, tokenisation, and training.
+Write a short story (about 200 words) about a robot who discovers music for the first time.
+List and briefly explain ten common software design patterns with a one-line example each.
+Describe the pros and cons of renewable energy sources: solar, wind, hydroelectric, and geothermal.
