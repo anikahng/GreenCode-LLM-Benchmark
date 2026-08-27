@@ -78,7 +78,8 @@ python3 benchmark.py
   --reasoning-modes on off           # which reasoning modes to run for
                                      # reasoning_capable models (default: both)
   --models-config models_config.json # per-model reasoning metadata (see below)
-  --gold-answers reasoning_prompts.csv  # optional gold answers for accuracy scoring                            # output directory
+  --gold-answers reasoning_prompts.csv  # optional gold answers for accuracy scoring                            
+                                     # output directory
 ```
 
 ### Plots
@@ -90,7 +91,6 @@ python3 plot_results.py 20250522_143012
 ```
 The timestamp corresponds to the suffix of the files in `results/` – `prompts_YYYYMMDD_HHMMSS.csv` and `timeseries_YYYYMMDD_HHMMSS.csv` are resolved automatically from it.
 
----
 ---
 
 ## Reasoning-Control Extension
@@ -228,11 +228,18 @@ Additional columns added by the reasoning-control extension:
 - **Colored curve**: averaged load power across all runs
 - **Shaded area**: ±1σ between runs
 - **Δ annotation**: extra consumption compared to idle
+- For models with both reasoning modes recorded, this becomes two separate
+  files (`timeline_<model>_on.png` / `timeline_<model>_off.png`) rather than
+  one averaged curve mixing both modes together.
 ![timeline chart](example/plots/20260526_120833/timeline_gemma3_4b.png)
 
 ### `comparison_bar.png`
 - **Top**: idle (light blue) / mean load / peak load per model in watts
 - **Bottom**: energy per prompt in joules + tokens/s
+- Models with both reasoning modes appear as two adjacent bars, e.g.
+  `qwen3.5:2b (off)` / `qwen3.5:2b (on)` - both use the same base colour,
+  with the "off" bar in a lighter tint, so paired bars are easy to spot at
+  a glance without needing to read the x-axis labels closely.
 ![comparison chart](example/plots/20260526_120833/comparison_bar.png)
 
 ### `temperatures.png`
@@ -240,7 +247,40 @@ Additional columns added by the reasoning-control extension:
 - **Bottom**: CPU temperature (if available – depends on lm-sensors or WSL2 thermal zone)
 - **Shaded areas**: load phases per model
 - CPU temperature may remain empty in WSL2 if neither lm-sensors nor `/sys/class/thermal` is available
+- **Dashed curve** = reasoning mode `on`, **solid curve** = `off`, same base
+  colour per model. If a model's `timeseries_*.csv` predates the
+  reasoning-control extension (no `reasoning_mode` column), that variant is
+  skipped with a console note rather than silently merging on/off samples -
+  re-run the model to populate it.
 ![temperatures chart](example/plots/20260526_120833/temperatures.png)
+
+
+### `reasoning_overhead.png`
+Bar pairs (on vs. off) of mean GPU energy per prompt, per model - only for
+models with both reasoning modes recorded. Each pair is annotated with the
+**Reasoning Overhead Factor (ROF)** = `E[on] / E[off]`, the single most
+important number for judging how expensive a model's thinking mode is in
+practice.
+
+### `reasoning_split.png`
+Stacked bars (reasoning mode `on` only) showing how much of the per-prompt
+energy went into thinking tokens vs. the final answer tokens, with the
+thinking-token share annotated as a percentage. Apportionment is
+approximate - see "Known limitations" above.
+
+### `reasoning_fair_compare.png`
+A stricter, token-normalised comparison: J per output-token with reasoning
+`off`, vs. J per **answer**-token with reasoning `on` (i.e. excluding the
+thinking-token overhead already shown separately in `reasoning_split.png`).
+This isolates whether reasoning mode changes the cost of producing the
+answer itself, independent of how many extra thinking tokens it generates.
+
+### `reasoning_accuracy.png`
+Only produced if `reasoning_prompts.csv` gold answers were supplied to
+`benchmark.py`. Plots accuracy on the scored Tier-4 prompts against energy
+per correct answer, connecting each model's `on` and `off` point - shows
+whether the extra energy of reasoning mode is "paid back" in higher
+accuracy, or wasted.
 
 ---
 
