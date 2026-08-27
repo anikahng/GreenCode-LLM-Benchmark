@@ -419,7 +419,8 @@ PROMPT_CSV_HEADER = [
 
 TIMESERIES_CSV_HEADER = [
     "t_mono", "wall_ts", "model", "phase",
-    "gpu_w", "gpu_temp_c", "cpu_temp_c", "cpu_pct"
+    "gpu_w", "gpu_temp_c", "cpu_temp_c", "cpu_pct",
+    "reasoning_mode",  # "on" | "off" | "n/a" - added by reasoning-control extension
 ]
 
 
@@ -570,6 +571,7 @@ def run_model(
             "gpu_temp_c": f"{gt:.1f}" if not isinstance(gt, float) or not __import__('math').isnan(gt) else "",
             "cpu_temp_c": f"{ct:.1f}" if not isinstance(ct, float) or not __import__('math').isnan(ct) else "",
             "cpu_pct": "",
+            "reasoning_mode": reasoning_mode,
         })
     ts_file.flush()
 
@@ -655,6 +657,7 @@ def run_model(
                     "gpu_temp_c": f"{gt:.1f}" if not isinstance(gt, float) or not __import__('math').isnan(gt) else "",
                     "cpu_temp_c": f"{ct:.1f}" if not isinstance(ct, float) or not __import__('math').isnan(ct) else "",
                     "cpu_pct": "",
+                    "reasoning_mode": reasoning_mode,
                 })
             ts_file.flush()
 
